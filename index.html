@@ -176,12 +176,13 @@
             messageContainer.appendChild(messageElement);
 
             if (isAI) {
-                const speakButton = document.createElement("button");
-                speakButton.textContent = "🔊 Speak";
-                speakButton.style.marginLeft = "10px";
-                speakButton.onclick = () => speakText(message);
-                messageElement.appendChild(speakButton);
-            }
+    const speakButton = document.createElement("button");
+    speakButton.textContent = "🔊";
+    speakButton.classList.add("MyButton"); // Ensure the correct class name
+    speakButton.style.marginLeft = "10px";
+    speakButton.onclick = () => speakText(message);
+    messageElement.appendChild(speakButton);
+}
 
             messageContainer.scrollTop = messageContainer.scrollHeight;
         }
