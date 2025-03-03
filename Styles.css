@@ -13,6 +13,27 @@
   --border-color: #e2e1f3;
   --shadow-color: rgba(192, 187, 255, 0.15);
 }
+.MyButton {
+    background: var(--button-color);
+    width: 35px; /* Adjusted width */
+    height: 35px; /* Adjusted height */
+    color: white;
+    border: none;
+    border-radius: 50%; /* Makes it round */
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    font-size: 14px; /* Adjusted font size */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px; /* Adjust margin */
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(255, 126, 182, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+}
 
 
 .left-side-content {
