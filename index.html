@@ -3,92 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chatbot</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f4f4f4;
-        }
-        .chat-container {
-            width: 400px;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-        .messages {
-            height: 300px;
-            overflow-y: auto;
-            border-bottom: 1px solid #ccc;
-            padding-bottom: 10px;
-        }
-        .input-container {
-            display: flex;
-            margin-top: 10px;
-        }
-        input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            padding: 10px 15px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            margin-left: 5px;
-            cursor: pointer;
-        }
-    </style>
+    <title>Bro - AI Chat</title>
+    <link rel="stylesheet" href="Styles.css">
+    <script src="Animation.js"></script>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="messages" id="messages"></div>
-        <div class="input-container">
-            <input type="text" id="userInput" placeholder="Ask something...">
-            <button onclick="sendMessage()">Send</button>
+   
+    
+    <div class="left-side-content">
+        <h1 class="app-title">Bro - AI Chat</h1>
+        <div class="app-description">
+            <p>Welcome to Bro-AI Chat, your personal AI companion that adapts to your needs. Create custom AI personalities, get help with various tasks, or just have a friendly conversation. Experience the next generation of AI chat technology.</p>
+            <p>Start by setting up your profile and choosing the AI personality that suits your needs.</p>
         </div>
     </div>
-
+    
+    <div class="chat-container">
+        <div id="profileSetup">
+            <h2>User Profile</h2>
+            <div>
+                <label for="userName">Your Name:</label>
+                <input type="text" id="userName" placeholder="Enter your name">
+            </div>
+            <div>
+                <label for="userGender">Gender:</label>
+                <select id="userGender">
+                    <option value="">Select gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div>
+                <label for="userProfession">Profession:</label>
+                <input type="text" id="userProfession" placeholder="Enter your profession">
+            </div>
+            
+            <h2>AI Role Setup</h2>
+            <div>
+                <label for="aiName">AI Name:</label>
+                <input type="text" id="aiName" placeholder="Give your AI a name">
+            </div>
+            <div>
+                <label for="aiRole">Select AI Role:</label>
+                <select id="aiRole">
+                    <option value="">Select a role</option>
+                    <option value="Teacher">Teacher</option>
+                    <option value="Friend">Friend</option>
+                    <option value="Best Friend">Best Friend</option>
+                    <option value="GirlFriend">GirlFriend</option>
+                    <option value="BoyFriend">BoyFriend</option>
+                    <option value="Programmer">Programmer</option>
+                    <option value="Custom">Custom Role</option>
+                </select>
+            </div>
+            <div id="customRoleSection" style="display: none;">
+                <label for="customRoleName">Custom Role Name:</label>
+                <input type="text" id="customRoleName" placeholder="Enter custom role name">
+            </div>
+            <div>
+                <label for="roleDescription">Role Description:</label>
+                <textarea id="roleDescription" placeholder="Describe how the AI should behave in this role"></textarea>
+            </div>
+            
+            <button onclick="startChat()">Start Chat</button>
+        </div>
+        
+        <div id="chatInterface" style="display: none;">
+            <div class="user-info" id="userInfo"></div>
+            <div class="ai-role-info" id="aiRoleInfo"></div>
+            <div class="messages" id="messages"></div>
+            <div class="input-container">
+                <input type="text" id="userInput" placeholder="Ask something...">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
     <script>
         const API_KEY = "AIzaSyAIHI-6F-f358qnIt3Yhagj278FpNnQAIg"; // Replace with your API Key
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
+        
+        let userProfile = { name: "", gender: "", profession: "" };
+        let aiConfig = { name: "", role: "", description: "" };
+
+        document.getElementById("aiRole").addEventListener("change", function() {
+            const customRoleSection = document.getElementById("customRoleSection");
+            if (this.value === "Custom") {
+                customRoleSection.style.display = "block";
+            } else {
+                customRoleSection.style.display = "none";
+                setDefaultDescription(this.value);
+            }
+        });
+
+        function setDefaultDescription(role) {
+            let description = {
+                "Teacher": "You are a knowledgeable and patient teacher who explains concepts clearly.",
+                "Friend": "You are a supportive friend who listens and offers casual conversation.",
+                "Best Friend": "You are a close friend who shares inside jokes and deep talks.",
+                "GirlFriend": "You are a caring girlfriend who shows affection and interest in daily life.",
+                "BoyFriend": "You are an attentive boyfriend who is supportive and engaging.",
+                "Programmer": "You are an expert programmer who helps with coding problems."
+            }[role] || "";
+
+            document.getElementById("roleDescription").value = description;
+        }
+
+        function startChat() {
+            userProfile.name = document.getElementById("userName").value;
+            userProfile.gender = document.getElementById("userGender").value;
+            userProfile.profession = document.getElementById("userProfession").value;
+
+            aiConfig.name = document.getElementById("aiName").value || "Bro";
+            const selectedRole = document.getElementById("aiRole").value;
+            aiConfig.role = selectedRole === "Custom" ? document.getElementById("customRoleName").value : selectedRole;
+            aiConfig.description = document.getElementById("roleDescription").value;
+
+            if (!userProfile.name || !userProfile.gender || !userProfile.profession || !aiConfig.role || !aiConfig.description) {
+                alert("Please fill in all fields!");
+                return;
+            }
+
+            document.getElementById("profileSetup").style.display = "none";
+            document.getElementById("chatInterface").style.display = "block";
+
+            document.getElementById("userInfo").innerHTML = `<strong>User:</strong> ${userProfile.name} (${userProfile.gender}, ${userProfile.profession})`;
+            document.getElementById("aiRoleInfo").innerHTML = `<strong>AI:</strong> ${aiConfig.name} as ${aiConfig.role}`;
+
+            sendInitialGreeting();
+        }
+
+        function sendInitialGreeting() {
+            const greeting = `Hello ${userProfile.name}! I'm ${aiConfig.name}, your AI ${aiConfig.role}. ${aiConfig.description} How can I help you today?`;
+            displayMessage(`${aiConfig.name}: ${greeting}`, true);
+        }
 
         async function sendMessage() {
             const userInput = document.getElementById("userInput").value;
             if (!userInput) return;
-            
-            displayMessage("You: " + userInput);
+
+            displayMessage(`${userProfile.name}: ${userInput}`);
             document.getElementById("userInput").value = "";
-            
-            const response = await fetch(API_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: userInput }] }]
-                })
-            });
-            
-            const data = await response.json();
-            const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't understand.";
-            displayMessage("AI: " + reply);
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{ 
+                            parts: [{ 
+                                text: `You are now acting as ${aiConfig.name}, a ${aiConfig.role}. ${aiConfig.description}
+                                The user's name is ${userProfile.name}, they are ${userProfile.gender} and work as ${userProfile.profession}.
+                                Please respond to their message: ${userInput}`
+                            }] 
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't understand.";
+                displayMessage(`${aiConfig.name} (${aiConfig.role}): ${reply}`, true);
+            } catch (error) {
+                console.error("Error:", error);
+                displayMessage(`${aiConfig.name}: Sorry, there was an error processing your request.`);
+            }
         }
-        
-        function displayMessage(message) {
+
+        function displayMessage(message, isAI = false) {
             const messageContainer = document.getElementById("messages");
             const messageElement = document.createElement("div");
             messageElement.textContent = message;
             messageContainer.appendChild(messageElement);
+
+            if (isAI) {
+                const speakButton = document.createElement("button");
+                speakButton.textContent = "🔊 Speak";
+                speakButton.style.marginLeft = "10px";
+                speakButton.onclick = () => speakText(message);
+                messageElement.appendChild(speakButton);
+            }
+
             messageContainer.scrollTop = messageContainer.scrollHeight;
         }
+
+        function speakText(text) {
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.lang = "en-US"; 
+    speech.rate = 1;  
+    speech.pitch = 1.2;  
+
+    function setVoice() {
+        const voices = window.speechSynthesis.getVoices();
+        const femaleVoice = voices.find(voice => 
+            voice.name.includes("Female") || 
+            voice.name.includes("Samantha") || 
+            voice.name.includes("Google UK English Female") ||
+            voice.name.includes("Victoria") ||
+            voice.name.includes("Google US English")
+        );
+
+        if (femaleVoice) {
+            speech.voice = femaleVoice;
+            console.log("Using voice:", femaleVoice.name);
+        } else {
+            console.warn("No female voice found, using default.");
+        }
+
+        window.speechSynthesis.speak(speech);
+    }
+
+    if (window.speechSynthesis.getVoices().length === 0) {
+        window.speechSynthesis.onvoiceschanged = setVoice;
+    } else {
+        setVoice();
+    }
+}
+
+
+        document.getElementById("userInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        });
     </script>
 </body>
 </html>
