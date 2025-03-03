@@ -71,7 +71,7 @@ body {
 }
 
 .chat-container {
-  width: 500px;
+  width: 600px;
   background: var(--panel-color);
   padding: 25px;
   border-radius: 25px;
